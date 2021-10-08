@@ -19,7 +19,6 @@ from singer.utils import now, strftime, strptime_to_utc
 from tap_pendo import utils as tap_pendo_utils
 
 KEY_PROPERTIES = ['id']
-BASE_URL = "https://app.pendo.io"
 
 endpoints = {
     "account": {
@@ -144,8 +143,8 @@ def get_abs_path(path):
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
 
 
-def get_url(endpoint, **kwargs):
-    return BASE_URL + endpoints[endpoint]['endpoint'].format(**kwargs)
+def get_url(endpoint, base_url, **kwargs):
+    return base_url + endpoints[endpoint]['endpoint'].format(**kwargs)
 
 
 def get_method(endpoint):
@@ -246,8 +245,10 @@ class Stream():
             'content-type': 'application/json'
         }
 
+        base_url = self.config.get('base_url', 'https://app.pendo.io')
+
         request_kwargs = {
-            'url': get_url(endpoint, **kwargs),
+            'url': get_url(endpoint, base_url, **kwargs),
             'method': get_method(endpoint),
             'headers': headers,
             'params': params
