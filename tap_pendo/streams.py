@@ -20,7 +20,6 @@ from singer.utils import now, strftime, strptime_to_utc
 from tap_pendo import utils as tap_pendo_utils
 
 KEY_PROPERTIES = ['id']
-BASE_URL = "https://app.pendo.io"
 
 LOGGER = singer.get_logger()
 session = requests.Session()
@@ -92,11 +91,11 @@ class Endpoints():
         self.headers = headers
         self.params = params
 
-    def get_url(self, **kwargs):
+    def get_url(self, base_url, **kwargs):
         """
-        Concatenate  and format the dynamic values to the BASE_URL
+        Concatenate  and format the dynamic values to the base_url
         """
-        return BASE_URL + self.endpoint.format(**kwargs)
+        return base_url + self.endpoint.format(**kwargs)
 
 
 class Stream():
@@ -155,8 +154,10 @@ class Stream():
             'content-type': 'application/json'
         }
 
+        base_url = self.config.get('base_url', 'https://app.pendo.io')
+
         request_kwargs = {
-            'url': self.endpoint.get_url(**kwargs),
+            'url': self.endpoint.get_url(base_url, **kwargs),
             'method': self.endpoint.method,
             'headers': headers,
             'params': params
