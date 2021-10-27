@@ -468,6 +468,8 @@ class Stream():
 
     def lookback_window(self):
         lookback_window = self.config.get('lookback_window') or '0'
+        if type(lookback_window) == int:
+            return lookback_window
         if not lookback_window.isdigit():
             raise TypeError("lookback_window '{}' is not numeric. Check your configuration".format(lookback_window))
         return int(lookback_window)
